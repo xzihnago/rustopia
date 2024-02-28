@@ -10,7 +10,7 @@ impl Settings {
     pub fn default() -> Self {
         Self {
             control: ControlSetting {
-                move_speed: 500.,
+                move_speed: 400.,
                 rotate_speed: 0.2,
             },
             keybind: KeybindSetting {
