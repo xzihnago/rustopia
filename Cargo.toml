@@ -1,15 +1,27 @@
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[package]
+name = "rustopia"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.8"
+noise = "0.8"
+bevy = "0.13"
+bevy_rapier3d = { version = "0.25", features = [
+    "debug-render-3d",
+    "simd-stable",
+    "parallel",
+] }
+settings = { path = "crates/settings" }
+debugpanel = { path = "crates/debugpanel" }
+skylight = { path = "crates/skylight" }
+player = { path = "crates/player" }
+terrain = { path = "crates/terrain" }
+
 
 [workspace]
 resolver = "2"
-members = [
-    "settings",
-    "debugpanel",
-    "skylight",
-    "player",
-    "terrain",
-    "rustopia",
-]
+members = ["crates/*"]
 
 [profile.dev]
 opt-level = 1
