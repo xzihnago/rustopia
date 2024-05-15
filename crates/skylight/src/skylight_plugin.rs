@@ -3,16 +3,18 @@ use bevy_atmosphere::prelude::*;
 
 use crate::SkylightSetting;
 use crate::SkylightTimer;
-use crate::SkylightTimerPlugin;
 
 pub struct SkylightPlugin;
 
 impl Plugin for SkylightPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(AtmospherePlugin)
-            .add_plugins(SkylightTimerPlugin)
             .add_systems(Startup, startup)
             .add_systems(PostStartup, post_startup)
+            .add_systems(
+                PreUpdate,
+                |time: Res<Time>, mut timer: ResMut<SkylightTimer>| timer.tick(time.delta()),
+            )
             .add_systems(
                 Update,
                 update.run_if(|timer: Res<SkylightTimer>| timer.finished()),
@@ -21,6 +23,13 @@ impl Plugin for SkylightPlugin {
 }
 
 fn startup(mut commands: Commands) {
+    commands.insert_resource(SkylightTimer::default());
+
+    commands.insert_resource(AmbientLight {
+        color: Color::ALICE_BLUE,
+        brightness: 10.,
+    });
+
     let setting = SkylightSetting::default();
     let skylight_data = setting.calc_skylight_data();
 
@@ -51,6 +60,7 @@ fn post_startup(mut commands: Commands, camera: Query<Entity, With<Camera>>) {
 
 fn update(
     time: Res<Time>,
+    mut ambient: ResMut<AmbientLight>,
     mut atmosphere: AtmosphereMut<Nishita>,
     mut skylight: Query<(&mut Transform, &mut DirectionalLight, &mut SkylightSetting)>,
     camera: Query<&GlobalTransform, With<Camera>>,
@@ -63,6 +73,8 @@ fn update(
     let skylight_data = setting.calc_skylight_data();
 
     // Update the atmosphere and light
+    ambient.brightness = skylight_data.brightness;
+
     atmosphere.ray_origin = Vec3::new(0., 0., 6372e3 + camera.translation().z);
 
     atmosphere.sun_position = skylight_data.solar;
