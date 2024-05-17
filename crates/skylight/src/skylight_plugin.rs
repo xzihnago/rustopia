@@ -25,28 +25,28 @@ impl Plugin for SkylightPlugin {
 fn startup(mut commands: Commands) {
     commands.insert_resource(SkylightTimer::default());
 
-    commands.insert_resource(AmbientLight {
-        color: Color::ALICE_BLUE,
-        brightness: 10.,
-    });
-
     let setting = SkylightSetting::default();
-    let skylight_data = setting.calc_skylight_data();
+    let data = setting.calc_skylight_data();
 
     commands.insert_resource(AtmosphereModel::new(Nishita {
         ray_origin: Vec3::new(0., 0., 6372e3),
-        sun_position: skylight_data.solar,
+        sun_position: data.solar,
         ..default()
     }));
+
+    commands.insert_resource(AmbientLight {
+        color: Color::ALICE_BLUE,
+        brightness: data.brightness,
+    });
 
     commands.spawn((
         DirectionalLightBundle {
             directional_light: DirectionalLight {
-                illuminance: skylight_data.illuminance,
+                illuminance: data.illuminance,
                 shadows_enabled: true,
                 ..default()
             },
-            transform: Transform::IDENTITY.looking_to(-skylight_data.solar, skylight_data.axis),
+            transform: Transform::IDENTITY.looking_to(-data.solar, data.axis),
             ..default()
         },
         setting,
@@ -54,8 +54,8 @@ fn startup(mut commands: Commands) {
 }
 
 fn post_startup(mut commands: Commands, camera: Query<Entity, With<Camera>>) {
-    let camera = camera.single();
-    commands.entity(camera).insert(AtmosphereCamera::default());
+    let mut camera = commands.entity(camera.single());
+    camera.insert(AtmosphereCamera::default());
 }
 
 fn update(
@@ -70,15 +70,15 @@ fn update(
 
     // Update the hour angle
     setting.hour_angle = setting.angvel * time.elapsed_seconds_wrapped() - 2.;
-    let skylight_data = setting.calc_skylight_data();
+    let data = setting.calc_skylight_data();
 
     // Update the atmosphere and light
-    ambient.brightness = skylight_data.brightness;
+    ambient.brightness = data.brightness;
 
     atmosphere.ray_origin = Vec3::new(0., 0., 6372e3 + camera.translation().z);
 
-    atmosphere.sun_position = skylight_data.solar;
-    transform.look_to(-skylight_data.solar, skylight_data.axis);
-    light.illuminance = skylight_data.illuminance;
-    light.color = skylight_data.color;
+    atmosphere.sun_position = data.solar;
+    transform.look_to(-data.solar, data.axis);
+    light.illuminance = data.illuminance;
+    light.color = data.color;
 }
