@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct GraphicsSettings {
-    pub anti_aliasing: AntiAliasing,
+    pub aa: AntiAliasing,
     #[serde(with = "ScreenSpaceAmbientOcclusionQualityLevelDef")]
     pub ssao: ScreenSpaceAmbientOcclusionQualityLevel,
     pub specular_transmission: SpecularTransmission,
@@ -114,7 +114,7 @@ impl std::fmt::Debug for GraphicsSettings {
         write!(
             f,
             "GraphicsSettings {{ anti_aliasing: {:?}, ssao: {}, specular_transmission: {:?} }}",
-            self.anti_aliasing, ssao, self.specular_transmission
+            self.aa, ssao, self.specular_transmission
         )
     }
 }

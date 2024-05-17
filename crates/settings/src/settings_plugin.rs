@@ -1,10 +1,9 @@
 use bevy::{
     core_pipeline::{
-        experimental::taa::{
-            TemporalAntiAliasBundle, TemporalAntiAliasPlugin, TemporalAntiAliasSettings,
-        },
+        experimental::taa::{TemporalAntiAliasBundle, TemporalAntiAliasPlugin},
         fxaa::Fxaa,
     },
+    pbr::{ScreenSpaceAmbientOcclusionBundle, ScreenSpaceAmbientOcclusionSettings},
     prelude::*,
 };
 
@@ -19,39 +18,23 @@ impl Plugin for SettingsPlugin {
 
         app.add_plugins(TemporalAntiAliasPlugin)
             .insert_resource(settings)
-            .add_systems(PostStartup, set_anti_aliasing);
+            .add_systems(PostStartup, (set_aa, set_ssao));
     }
 }
 
-fn set_anti_aliasing(
+fn set_aa(
     mut commands: Commands,
     settings: Res<Settings>,
     mut msaa: ResMut<Msaa>,
-    mut camera: Query<
-        (
-            Entity,
-            Option<&mut Fxaa>,
-            Option<&TemporalAntiAliasSettings>,
-        ),
-        With<Camera>,
-    >,
+    mut camera: Query<Entity, With<Camera>>,
 ) {
-    let (camera_entity, fxaa, taa) = camera.single_mut();
-    let mut camera = commands.entity(camera_entity);
+    let mut camera = commands.entity(camera.single_mut());
 
-    match settings.graphic.anti_aliasing {
-        AntiAliasing::Off => {
-            *msaa = Msaa::Off;
-            camera.remove::<Fxaa>();
-            camera.remove::<TemporalAntiAliasBundle>();
-        }
+    *msaa = Msaa::Off;
+    camera.remove::<(Fxaa, TemporalAntiAliasBundle)>();
 
-        AntiAliasing::FXAA(sensitivity)
-            if fxaa.is_none() || fxaa.unwrap().edge_threshold != sensitivity =>
-        {
-            *msaa = Msaa::Off;
-            camera.remove::<Fxaa>();
-            camera.remove::<TemporalAntiAliasBundle>();
+    match settings.graphic.aa {
+        AntiAliasing::FXAA(sensitivity) => {
             camera.insert(Fxaa {
                 edge_threshold: sensitivity,
                 edge_threshold_min: sensitivity,
@@ -59,18 +42,26 @@ fn set_anti_aliasing(
             });
         }
 
-        AntiAliasing::MSAA(samples) if *msaa != samples => {
+        AntiAliasing::MSAA(samples) => {
             *msaa = samples;
-            camera.remove::<Fxaa>();
-            camera.remove::<TemporalAntiAliasBundle>();
         }
 
-        AntiAliasing::TAA if taa.is_none() => {
-            *msaa = Msaa::Off;
-            camera.remove::<Fxaa>();
+        AntiAliasing::TAA => {
             camera.insert(TemporalAntiAliasBundle::default());
         }
 
         _ => {}
     }
+}
+
+fn set_ssao(mut commands: Commands, settings: Res<Settings>, camera: Query<Entity, With<Camera>>) {
+    let mut camera = commands.entity(camera.single());
+
+    camera.remove::<ScreenSpaceAmbientOcclusionBundle>();
+    camera.insert(ScreenSpaceAmbientOcclusionBundle {
+        settings: ScreenSpaceAmbientOcclusionSettings {
+            quality_level: settings.graphic.ssao,
+        },
+        ..default()
+    });
 }
