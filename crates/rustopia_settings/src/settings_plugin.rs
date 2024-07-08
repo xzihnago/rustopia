@@ -2,6 +2,7 @@ use bevy::{
     core_pipeline::{
         experimental::taa::{TemporalAntiAliasBundle, TemporalAntiAliasPlugin},
         fxaa::Fxaa,
+        smaa::SmaaSettings,
     },
     pbr::{ScreenSpaceAmbientOcclusionBundle, ScreenSpaceAmbientOcclusionSettings},
     prelude::*,
@@ -13,13 +14,19 @@ pub struct SettingsPlugin;
 
 impl Plugin for SettingsPlugin {
     fn build(&self, app: &mut App) {
-        let settings = Settings::load("settings.json").unwrap_or_default();
-        settings.save("settings.json").unwrap();
-
         app.add_plugins(TemporalAntiAliasPlugin)
-            .insert_resource(settings)
-            .add_systems(PostStartup, (set_aa, set_ssao));
+            .add_systems(PostStartup, (set_hdr, set_aa, set_ssao))
+            .insert_resource(Settings::load("settings.json").unwrap_or_else(|_| {
+                let settings = Settings::default();
+                settings.save("settings.json").unwrap();
+                settings
+            }));
     }
+}
+
+fn set_hdr(settings: Res<Settings>, mut camera: Query<&mut Camera>) {
+    let mut camera = camera.single_mut();
+    camera.hdr = settings.graphic.hdr;
 }
 
 fn set_aa(
@@ -40,6 +47,10 @@ fn set_aa(
                 edge_threshold_min: sensitivity,
                 ..default()
             });
+        }
+
+        AntiAliasing::SMAA(preset) => {
+            camera.insert(SmaaSettings { preset });
         }
 
         AntiAliasing::MSAA(samples) => {

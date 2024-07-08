@@ -5,22 +5,23 @@ edition = "2021"
 
 [dependencies]
 rand = "0.8"
-bevy = "0.13"
-bevy_rapier3d = { version = "0.25", features = [
-    "debug-render-3d",
-    "simd-stable",
-    "parallel",
-] }
-settings = { path = "crates/settings" }
-debugpanel = { path = "crates/debugpanel" }
-skylight = { path = "crates/skylight" }
-player = { path = "crates/player" }
-terrain = { path = "crates/terrain" }
+bevy = "0.14"
+bevy_rapier3d = { version = "0.27", features = ["parallel", "simd-stable"] }
+rustopia_settings = { path = "crates/rustopia_settings" }
+rustopia_skylight = { path = "crates/rustopia_skylight" }
+rustopia_player = { path = "crates/rustopia_player" }
+# debugpanel = { path = "crates/debugpanel" }
+# terrain = { path = "crates/terrain" }
 
 
 [workspace]
 resolver = "2"
-members = ["crates/*"]
+# members = ["crates/*"]
+members = [
+    "crates/rustopia_settings",
+    "crates/rustopia_skylight",
+    "crates/rustopia_player",
+]
 
 [profile.dev]
 opt-level = 1
@@ -30,3 +31,4 @@ opt-level = 3
 
 [profile.release]
 codegen-units = 1
+strip = "symbols"

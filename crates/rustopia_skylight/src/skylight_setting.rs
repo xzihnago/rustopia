@@ -1,13 +1,8 @@
-use std::{
-    f32::{
-        consts::{FRAC_2_PI, TAU},
-        EPSILON,
-    },
-    ops::{Add, Div, Mul, Sub},
-};
+use std::f32::consts::{FRAC_2_PI, TAU};
 
 use bevy::prelude::*;
-use colortemp::temp_to_rgb;
+
+use crate::utils::*;
 
 #[derive(Component)]
 pub struct SkylightSetting {
@@ -40,8 +35,7 @@ impl SkylightSetting {
 
         let curve = (-(solar.z.acos() * FRAC_2_PI).powf(4.) + 1.).max(0.); // y = -x^4 + 1
         let kelvin = (self.colortemp_max - self.colortemp_min) * curve + self.colortemp_min;
-        let colortemp = temp_to_rgb(kelvin as i64);
-        let color = Color::rgb_u8(colortemp.r as u8, colortemp.g as u8, colortemp.b as u8);
+        let color = color_from_temperature(kelvin);
 
         SkylightData {
             axis,
@@ -49,24 +43,6 @@ impl SkylightSetting {
             brightness,
             illuminance,
             color,
-        }
-    }
-}
-
-impl SkylightSetting {
-    #[allow(dead_code)]
-    pub fn new(north: Vec3, east: Vec3) -> Self {
-        if north == Vec3::ZERO || east == Vec3::ZERO {
-            panic!("North and east vectors must not be zero");
-        } else if north.dot(east).abs() > EPSILON {
-            panic!("North and east vectors must be orthogonal");
-        }
-
-        Self {
-            north,
-            east,
-            down: north.cross(east),
-            ..default()
         }
     }
 }
@@ -98,11 +74,4 @@ pub struct SkylightData {
     pub brightness: f32,
     pub illuminance: f32,
     pub color: Color,
-}
-
-fn map_range<T: Copy>(from: (T, T), to: (T, T), v: T) -> T
-where
-    T: Add<T, Output = T> + Sub<T, Output = T> + Mul<T, Output = T> + Div<T, Output = T>,
-{
-    to.0 + (v - from.0) * (to.1 - to.0) / (from.1 - from.0)
 }

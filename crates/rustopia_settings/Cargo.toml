@@ -1,0 +1,10 @@
+[package]
+name = "rustopia_settings"
+version = "0.14.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "*"
+serde = "1"
+serde_json = "1"
+bevy = { version = "0.14", features = ["serialize"] }

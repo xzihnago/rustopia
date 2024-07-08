@@ -1,8 +1,7 @@
 use bevy::prelude::*;
 use bevy_atmosphere::prelude::*;
 
-use crate::SkylightSetting;
-use crate::SkylightTimer;
+use crate::{utils::*, SkylightSetting, SkylightTimer};
 
 pub struct SkylightPlugin;
 
@@ -35,7 +34,7 @@ fn startup(mut commands: Commands) {
     }));
 
     commands.insert_resource(AmbientLight {
-        color: Color::ALICE_BLUE,
+        color: color_from_temperature(12000.),
         brightness: data.brightness,
     });
 
@@ -68,17 +67,17 @@ fn update(
     let (mut transform, mut light, mut setting) = skylight.single_mut();
     let camera = camera.single();
 
-    // Update the hour angle
+    // Update hour angle
     setting.hour_angle = setting.angvel * time.elapsed_seconds_wrapped() - 2.;
     let data = setting.calc_skylight_data();
 
-    // Update the atmosphere and light
+    // Update light
     ambient.brightness = data.brightness;
-
-    atmosphere.ray_origin = Vec3::new(0., 0., 6372e3 + camera.translation().z);
-
-    atmosphere.sun_position = data.solar;
     transform.look_to(-data.solar, data.axis);
     light.illuminance = data.illuminance;
     light.color = data.color;
+
+    // Update skybox
+    atmosphere.ray_origin = Vec3::new(0., 0., 6372e3 + camera.translation().z);
+    atmosphere.sun_position = data.solar;
 }

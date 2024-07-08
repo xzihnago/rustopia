@@ -1,13 +1,16 @@
+use std::fmt::Debug;
+
 use bevy::{
-    core_pipeline::{core_3d::ScreenSpaceTransmissionQuality, fxaa::Sensitivity},
+    core_pipeline::{core_3d::ScreenSpaceTransmissionQuality, fxaa::Sensitivity, smaa::SmaaPreset},
     pbr::ScreenSpaceAmbientOcclusionQualityLevel,
     render::view::Msaa,
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default)]
-pub struct GraphicsSettings {
+pub struct GraphicSettings {
+    pub hdr: bool,
     pub aa: AntiAliasing,
     #[serde(with = "ScreenSpaceAmbientOcclusionQualityLevelDef")]
     pub ssao: ScreenSpaceAmbientOcclusionQualityLevel,
@@ -20,6 +23,8 @@ pub enum AntiAliasing {
     Off,
     #[serde(with = "SensitivityDef")]
     FXAA(Sensitivity),
+    #[serde(with = "SmaaPresetDef")]
+    SMAA(SmaaPreset),
     #[serde(with = "MsaaDef")]
     MSAA(Msaa),
     TAA,
@@ -49,6 +54,15 @@ pub enum SensitivityDef {
     High,
     Ultra,
     Extreme,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(remote = "SmaaPreset")]
+pub enum SmaaPresetDef {
+    Low,
+    Medium,
+    High,
+    Ultra,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -82,39 +96,17 @@ pub enum ScreenSpaceTransmissionQualityDef {
     Ultra,
 }
 
-// TODO: waiting for bevy 0.14 update, official Debug implementation for Sensitivity
-impl std::fmt::Debug for AntiAliasing {
+impl Debug for AntiAliasing {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             AntiAliasing::Off => write!(f, "Off"),
-            AntiAliasing::FXAA(sensitivity) => write!(f, "FXAA({})", sensitivity.get_str()),
+            AntiAliasing::FXAA(sensitivity) => write!(f, "FXAA({:?})", sensitivity),
+            AntiAliasing::SMAA(SmaaPreset::Low) => write!(f, "SMAA(Low)"),
+            AntiAliasing::SMAA(SmaaPreset::Medium) => write!(f, "SMAA(Medium)"),
+            AntiAliasing::SMAA(SmaaPreset::High) => write!(f, "SMAA(High)"),
+            AntiAliasing::SMAA(SmaaPreset::Ultra) => write!(f, "SMAA(Ultra)"),
             AntiAliasing::MSAA(samples) => write!(f, "MSAA({:?})", samples),
             AntiAliasing::TAA => write!(f, "TAA"),
         }
-    }
-}
-
-// TODO: waiting for bevy 0.14 update, official Debug implementation for ScreenSpaceAmbientOcclusionQualityLevel (#13387)
-impl std::fmt::Debug for GraphicsSettings {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let ssao = match &self.ssao {
-            ScreenSpaceAmbientOcclusionQualityLevel::Low => format!("Low"),
-            ScreenSpaceAmbientOcclusionQualityLevel::Medium => format!("Medium"),
-            ScreenSpaceAmbientOcclusionQualityLevel::High => format!("High"),
-            ScreenSpaceAmbientOcclusionQualityLevel::Ultra => format!("Ultra"),
-            ScreenSpaceAmbientOcclusionQualityLevel::Custom {
-                slice_count,
-                samples_per_slice_side,
-            } => format!(
-                "Custom {{ slice_count: {}, samples_per_slice_side: {} }}",
-                slice_count, samples_per_slice_side
-            ),
-        };
-
-        write!(
-            f,
-            "GraphicsSettings {{ anti_aliasing: {:?}, ssao: {}, specular_transmission: {:?} }}",
-            self.aa, ssao, self.specular_transmission
-        )
     }
 }
