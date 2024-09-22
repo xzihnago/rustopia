@@ -1,3 +1,5 @@
+use std::f32::consts::TAU;
+
 use bevy::prelude::*;
 use bevy_atmosphere::prelude::*;
 
@@ -24,18 +26,23 @@ impl Plugin for SkylightPlugin {
 fn startup(mut commands: Commands) {
     commands.insert_resource(SkylightTimer::default());
 
-    let setting = SkylightSetting::default();
+    let setting = SkylightSetting {
+        angvel: -TAU * 30. / 86400.,
+        inclination: 23.45_f32.to_radians(),
+        latitude: 23.45_f32.to_radians(),
+        ..default()
+    };
     let data = setting.calc_skylight_data();
 
     commands.insert_resource(AtmosphereModel::new(Nishita {
         ray_origin: Vec3::new(0., 0., 6372e3),
-        sun_position: data.solar,
+        sun_position: data.direction,
         ..default()
     }));
 
     commands.insert_resource(AmbientLight {
         color: color_from_temperature(12000.),
-        brightness: data.brightness,
+        brightness: data.ambient,
     });
 
     commands.spawn((
@@ -45,7 +52,7 @@ fn startup(mut commands: Commands) {
                 shadows_enabled: true,
                 ..default()
             },
-            transform: Transform::IDENTITY.looking_to(-data.solar, data.axis),
+            transform: Transform::IDENTITY.looking_to(-data.direction, data.up),
             ..default()
         },
         setting,
@@ -72,12 +79,12 @@ fn update(
     let data = setting.calc_skylight_data();
 
     // Update light
-    ambient.brightness = data.brightness;
-    transform.look_to(-data.solar, data.axis);
+    ambient.brightness = data.ambient;
+    transform.look_to(-data.direction, data.up);
     light.illuminance = data.illuminance;
     light.color = data.color;
 
     // Update skybox
     atmosphere.ray_origin = Vec3::new(0., 0., 6372e3 + camera.translation().z);
-    atmosphere.sun_position = data.solar;
+    atmosphere.sun_position = data.direction;
 }
