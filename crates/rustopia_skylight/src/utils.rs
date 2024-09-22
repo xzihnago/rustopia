@@ -14,10 +14,9 @@ where
 
 pub fn curve_from_height(height: f32) -> f32 {
     let height = height.clamp(-1., 1.).acos() * FRAC_2_PI;
-    if height <= 0. {
-        0.
-    } else {
-        -height.powf(4.) + 1.
+    match height {
+        _ if height <= 0. => 0.,
+        _ => -height.powf(4.) + 1.,
     }
 }
 
@@ -25,26 +24,22 @@ pub fn color_from_temperature(kelvin: f32) -> Color {
     let kelvin = kelvin.clamp(1000., 40000.);
     let temp = kelvin / 100.;
 
-    let r = if temp <= 66. {
-        1.
-    } else {
-        1.2929 * (temp - 60.).powf(-0.133)
+    let r = match temp {
+        _ if temp <= 66. => 1.,
+        _ => 1.2929 * (temp - 60.).powf(-0.133),
     }
     .clamp(0., 1.);
 
-    let g = if temp <= 66. {
-        0.3901 * temp.ln() - 0.6318
-    } else {
-        1.1299 * (temp - 60.).powf(-0.076)
+    let g = match temp {
+        _ if temp <= 66. => 0.3901 * temp.ln() - 0.6318,
+        _ => 1.1299 * (temp - 60.).powf(-0.076),
     }
     .clamp(0., 1.);
 
-    let b = if temp >= 66. {
-        1.
-    } else if temp <= 19. {
-        0.
-    } else {
-        0.5432 * (temp - 10.).ln() - 1.1963
+    let b = match temp {
+        _ if temp >= 66. => 1.,
+        _ if temp <= 19. => 0.,
+        _ => 0.5432 * (temp - 10.).ln() - 1.1963,
     }
     .clamp(0., 1.);
 
