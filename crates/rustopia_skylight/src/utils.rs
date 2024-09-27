@@ -5,9 +5,9 @@ use std::{
 
 use bevy::prelude::*;
 
-pub fn map_range<T: Copy>(from: (T, T), to: (T, T), v: T) -> T
+pub fn map_range<T>(v: T, from: (T, T), to: (T, T)) -> T
 where
-    T: Add<T, Output = T> + Sub<T, Output = T> + Mul<T, Output = T> + Div<T, Output = T>,
+    T: Copy + Add<T, Output = T> + Sub<T, Output = T> + Mul<T, Output = T> + Div<T, Output = T>,
 {
     to.0 + (v - from.0) * (to.1 - to.0) / (from.1 - from.0)
 }

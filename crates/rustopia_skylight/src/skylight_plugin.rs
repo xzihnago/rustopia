@@ -1,21 +1,28 @@
-use std::f32::consts::TAU;
-
 use bevy::prelude::*;
 use bevy_atmosphere::prelude::*;
 
-use crate::{utils::*, SkylightSetting, SkylightTimer};
+use crate::{utils::*, SkylightLight, SkylightSetting, SkylightTimer};
 
 pub struct SkylightPlugin;
 
 impl Plugin for SkylightPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(AtmospherePlugin)
-            .add_systems(Startup, startup)
-            .add_systems(PostStartup, post_startup)
+            .add_systems(
+                PostStartup,
+                |mut commands: Commands, camera: Query<Entity, With<Camera>>| {
+                    camera.iter().for_each(|entity| {
+                        commands.entity(entity).insert(AtmosphereCamera::default());
+                    });
+                },
+            )
             .add_systems(
                 PreUpdate,
-                |time: Res<Time>, mut timer: ResMut<SkylightTimer>| timer.tick(time.delta()),
+                |time: Res<Time>, mut timer: ResMut<SkylightTimer>| {
+                    timer.tick(time.delta());
+                },
             )
+            .add_systems(Startup, startup)
             .add_systems(
                 Update,
                 update.run_if(|timer: Res<SkylightTimer>| timer.finished()),
@@ -25,66 +32,43 @@ impl Plugin for SkylightPlugin {
 
 fn startup(mut commands: Commands) {
     commands.insert_resource(SkylightTimer::default());
-
-    let setting = SkylightSetting {
-        angvel: -TAU * 30. / 86400.,
-        inclination: 23.45_f32.to_radians(),
-        latitude: 23.45_f32.to_radians(),
-        ..default()
-    };
-    let data = setting.calc_skylight_data();
-
-    commands.insert_resource(AtmosphereModel::new(Nishita {
-        ray_origin: Vec3::new(0., 0., 6372e3),
-        sun_position: data.direction,
-        ..default()
-    }));
-
+    commands.insert_resource(SkylightSetting::default());
+    commands.insert_resource(AtmosphereModel::default());
     commands.insert_resource(AmbientLight {
         color: color_from_temperature(12000.),
-        brightness: data.ambient,
+        ..default()
     });
 
     commands.spawn((
+        SkylightLight,
         DirectionalLightBundle {
             directional_light: DirectionalLight {
-                illuminance: data.illuminance,
                 shadows_enabled: true,
                 ..default()
             },
-            transform: Transform::IDENTITY.looking_to(-data.direction, data.up),
             ..default()
         },
-        setting,
     ));
 }
 
-fn post_startup(mut commands: Commands, camera: Query<Entity, With<Camera>>) {
-    let mut camera = commands.entity(camera.single());
-    camera.insert(AtmosphereCamera::default());
-}
-
 fn update(
-    time: Res<Time>,
+    setting: Res<SkylightSetting>,
     mut ambient: ResMut<AmbientLight>,
+    mut directional: Query<(&mut DirectionalLight, &mut Transform), With<SkylightLight>>,
     mut atmosphere: AtmosphereMut<Nishita>,
-    mut skylight: Query<(&mut Transform, &mut DirectionalLight, &mut SkylightSetting)>,
     camera: Query<&GlobalTransform, With<Camera>>,
 ) {
-    let (mut transform, mut light, mut setting) = skylight.single_mut();
-    let camera = camera.single();
-
-    // Update hour angle
-    setting.hour_angle = setting.angvel * time.elapsed_seconds_wrapped() - 2.;
-    let data = setting.calc_skylight_data();
+    let data = setting.compute();
 
     // Update light
+    let (mut directional, mut directional_transform) = directional.single_mut();
+
     ambient.brightness = data.ambient;
-    transform.look_to(-data.direction, data.up);
-    light.illuminance = data.illuminance;
-    light.color = data.color;
+    directional.illuminance = data.directional;
+    directional.color = data.color;
+    directional_transform.look_to(-data.solar, data.up);
 
     // Update skybox
-    atmosphere.ray_origin = Vec3::new(0., 0., 6372e3 + camera.translation().z);
-    atmosphere.sun_position = data.direction;
+    atmosphere.ray_origin = Vec3::new(0., 0., 6372e3 + camera.single().translation().z);
+    atmosphere.sun_position = data.solar;
 }
