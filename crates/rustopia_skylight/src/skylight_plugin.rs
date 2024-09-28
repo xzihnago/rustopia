@@ -63,10 +63,10 @@ fn update(
     // Update light
     let (mut directional, mut directional_transform) = directional.single_mut();
 
-    ambient.brightness = data.ambient;
-    directional.illuminance = data.directional;
+    ambient.brightness = data.brightness;
+    directional.illuminance = data.illuminance;
     directional.color = data.color;
-    directional_transform.look_to(-data.solar, data.up);
+    directional_transform.look_to(-data.solar, data.axis);
 
     // Update skybox
     atmosphere.ray_origin = Vec3::new(0., 0., 6372e3 + camera.single().translation().z);

@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
 pub struct SkylightData {
-    pub up: Vec3,
+    pub axis: Vec3,
     pub solar: Vec3,
-    pub ambient: f32,
-    pub directional: f32,
+    pub brightness: f32,
+    pub illuminance: f32,
     pub color: Color,
 }

@@ -1,16 +1,6 @@
-use std::{
-    f32::consts::FRAC_2_PI,
-    ops::{Add, Div, Mul, Sub},
-};
+use std::f32::consts::FRAC_2_PI;
 
 use bevy::prelude::*;
-
-pub fn map_range<T>(v: T, from: (T, T), to: (T, T)) -> T
-where
-    T: Copy + Add<T, Output = T> + Sub<T, Output = T> + Mul<T, Output = T> + Div<T, Output = T>,
-{
-    to.0 + (v - from.0) * (to.1 - to.0) / (from.1 - from.0)
-}
 
 pub fn curve_from_height(height: f32) -> f32 {
     let height = height.clamp(-1., 1.).acos() * FRAC_2_PI;
