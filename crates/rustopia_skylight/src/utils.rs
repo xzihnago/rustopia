@@ -3,16 +3,16 @@ use std::f32::consts::FRAC_2_PI;
 use bevy::prelude::*;
 
 pub fn curve_from_height(height: f32) -> f32 {
-    let height = height.clamp(-1., 1.).acos() * FRAC_2_PI;
+    let height = height.clamp(-1., 1.);
+
     match height {
         _ if height <= 0. => 0.,
-        _ => -height.powf(4.) + 1.,
+        _ => -(height.acos() * FRAC_2_PI).powf(4.) + 1.,
     }
 }
 
 pub fn color_from_temperature(kelvin: f32) -> Color {
-    let kelvin = kelvin.clamp(1000., 40000.);
-    let temp = kelvin / 100.;
+    let temp = kelvin.clamp(1000., 40000.) / 100.;
 
     let r = match temp {
         _ if temp <= 66. => 1.,

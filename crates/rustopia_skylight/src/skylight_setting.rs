@@ -32,18 +32,18 @@ impl Default for SkylightSetting {
 impl SkylightSetting {
     pub fn compute(&self) -> SkylightData {
         let axis = Quat::from_axis_angle(Vec3::X, self.latitude) * Vec3::Y;
-        let solar = Quat::from_axis_angle(axis, self.hour_angle)
+        let position = Quat::from_axis_angle(axis, self.hour_angle)
             * Quat::from_axis_angle(Vec3::X, self.latitude + self.inclination)
             * Vec3::NEG_Z;
 
         let brightness =
-            solar
+            position
                 .z
                 .clamp(-0.15, 0.)
                 .remap(-0.15, 0., self.brightness.min(10.), self.brightness);
-        let illuminance = self.illuminance * solar.z.max(0.);
+        let illuminance = self.illuminance * position.z.max(0.);
 
-        let color = color_from_temperature(curve_from_height(solar.z).remap(
+        let color = color_from_temperature(curve_from_height(position.z).remap(
             0.,
             1.,
             self.colortemp_min,
@@ -52,7 +52,7 @@ impl SkylightSetting {
 
         SkylightData {
             axis,
-            solar,
+            position,
             brightness,
             illuminance,
             color,
