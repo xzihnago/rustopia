@@ -7,21 +7,18 @@ edition = "2021"
 rand = "0.8"
 bevy = "0.14"
 bevy_rapier3d = { version = "0.27", features = ["parallel", "simd-stable"] }
+rustopia_utils = { path = "crates/rustopia_utils" }
 rustopia_settings = { path = "crates/rustopia_settings" }
 rustopia_skylight = { path = "crates/rustopia_skylight" }
 rustopia_player = { path = "crates/rustopia_player" }
+rustopia_maze = { path = "crates/rustopia_maze" }
 # debugpanel = { path = "crates/debugpanel" }
 # terrain = { path = "crates/terrain" }
 
 
 [workspace]
 resolver = "2"
-# members = ["crates/*"]
-members = [
-    "crates/rustopia_settings",
-    "crates/rustopia_skylight",
-    "crates/rustopia_player",
-]
+members = ["crates/*", "examples/*"]
 
 [profile.dev]
 opt-level = 1
