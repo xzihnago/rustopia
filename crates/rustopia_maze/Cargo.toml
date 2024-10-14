@@ -1,0 +1,9 @@
+[package]
+name = "rustopia_maze"
+version = "0.14.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.14"
+maze_generator = "2.0"
+rustopia_utils = { path = "../../crates/rustopia_utils" }
