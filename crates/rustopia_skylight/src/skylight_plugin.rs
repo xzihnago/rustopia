@@ -7,33 +7,33 @@ pub struct SkylightPlugin;
 
 impl Plugin for SkylightPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(AtmospherePlugin)
-            .add_systems(
-                PostStartup,
-                |mut commands: Commands, camera: Query<Entity, With<Camera>>| {
-                    camera.iter().for_each(|entity| {
-                        commands.entity(entity).insert(AtmosphereCamera::default());
-                    });
-                },
-            )
+        app.add_plugins(AtmospherePlugin);
+
+        app.add_systems(Startup, startup)
+            .add_systems(PostStartup, insert_atmosphere_camera)
             .add_systems(
                 PreUpdate,
                 |time: Res<Time>, mut timer: ResMut<SkylightTimer>| {
                     timer.tick(time.delta());
                 },
             )
-            .add_systems(Startup, startup)
             .add_systems(
                 Update,
                 update.run_if(|timer: Res<SkylightTimer>| timer.finished()),
             );
+
+        app.init_resource::<SkylightTimer>()
+            .init_resource::<SkylightSetting>();
     }
 }
 
-fn startup(mut commands: Commands) {
-    commands.insert_resource(SkylightTimer::default());
-    commands.insert_resource(SkylightSetting::default());
+fn insert_atmosphere_camera(mut commands: Commands, camera: Query<Entity, With<Camera>>) {
+    camera.iter().for_each(|entity| {
+        commands.entity(entity).insert(AtmosphereCamera::default());
+    });
+}
 
+fn startup(mut commands: Commands) {
     commands.insert_resource(AtmosphereModel::default());
     commands.insert_resource(AmbientLight {
         color: color_from_temperature(12000.),

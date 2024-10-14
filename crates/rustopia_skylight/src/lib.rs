@@ -7,7 +7,7 @@ mod utils;
 
 use skylight::Skylight;
 use skylight_data::SkylightData;
-use skylight_timer::SkylightTimer;
 
 pub use skylight_plugin::SkylightPlugin;
 pub use skylight_setting::SkylightSetting;
+pub use skylight_timer::SkylightTimer;
