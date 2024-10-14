@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-
 use bevy::{
     core_pipeline::{core_3d::ScreenSpaceTransmissionQuality, fxaa::Sensitivity, smaa::SmaaPreset},
     pbr::ScreenSpaceAmbientOcclusionQualityLevel,
@@ -7,7 +5,7 @@ use bevy::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct GraphicSettings {
     pub hdr: bool,
@@ -17,7 +15,7 @@ pub struct GraphicSettings {
     pub specular_transmission: SpecularTransmission,
 }
 
-#[derive(Clone, Default, Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub enum AntiAliasing {
     #[default]
     Off,
@@ -30,7 +28,7 @@ pub enum AntiAliasing {
     TAA,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct SpecularTransmission {
     pub step: usize,
     #[serde(with = "ScreenSpaceTransmissionQualityDef")]
@@ -94,19 +92,4 @@ pub enum ScreenSpaceTransmissionQualityDef {
     Medium,
     High,
     Ultra,
-}
-
-impl Debug for AntiAliasing {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            AntiAliasing::Off => write!(f, "Off"),
-            AntiAliasing::FXAA(sensitivity) => write!(f, "FXAA({:?})", sensitivity),
-            AntiAliasing::SMAA(SmaaPreset::Low) => write!(f, "SMAA(Low)"),
-            AntiAliasing::SMAA(SmaaPreset::Medium) => write!(f, "SMAA(Medium)"),
-            AntiAliasing::SMAA(SmaaPreset::High) => write!(f, "SMAA(High)"),
-            AntiAliasing::SMAA(SmaaPreset::Ultra) => write!(f, "SMAA(Ultra)"),
-            AntiAliasing::MSAA(samples) => write!(f, "MSAA({:?})", samples),
-            AntiAliasing::TAA => write!(f, "TAA"),
-        }
-    }
 }
