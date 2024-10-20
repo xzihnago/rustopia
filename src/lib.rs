@@ -2,21 +2,28 @@ mod scenes;
 
 use bevy::{prelude::*, window::CursorGrabMode};
 
+use rustopia_debugpanel::DebugPanelPlugin;
 use rustopia_settings::SettingsPlugin;
 
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(SettingsPlugin);
+        app.add_plugins(SettingsPlugin)
+            .add_plugins(DebugPanelPlugin);
 
-        // app.add_plugins(scenes::MazeWorldPlugin);
-        app.add_plugins(scenes::DebugWorldPlugin);
+        app.add_plugins(scenes::MazeWorldPlugin);
+        // app.add_plugins(scenes::DebugWorldPlugin);
         // app.add_plugins(scenes::PhysicsWorldPlugin);
         // app.add_plugins(scenes::TerrainWorldPlugin);
 
-        app.add_systems(PreUpdate, update_cursor_grab_mode);
+        app.add_systems(PostStartup, insert_default_ui_camera)
+            .add_systems(PreUpdate, update_cursor_grab_mode);
     }
+}
+
+fn insert_default_ui_camera(mut commands: Commands, query: Query<Entity, With<Camera>>) {
+    commands.entity(query.single()).insert(IsDefaultUiCamera);
 }
 
 fn update_cursor_grab_mode(
