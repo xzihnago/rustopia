@@ -2,8 +2,6 @@ mod settings_control;
 mod settings_graphic;
 mod settings_keybind;
 
-pub use settings_graphic::AntiAliasing;
-
 use std::fs::File;
 
 use anyhow::Result;
@@ -13,6 +11,8 @@ use serde::{Deserialize, Serialize};
 use settings_control::ControlSettings;
 use settings_graphic::GraphicSettings;
 use settings_keybind::KeybindSettings;
+
+pub use settings_graphic::{AntiAliasing, VsyncMode};
 
 #[derive(Default, Serialize, Deserialize, Resource)]
 pub struct Settings {

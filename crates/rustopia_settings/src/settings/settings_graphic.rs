@@ -2,17 +2,30 @@ use bevy::{
     core_pipeline::{core_3d::ScreenSpaceTransmissionQuality, fxaa::Sensitivity, smaa::SmaaPreset},
     pbr::ScreenSpaceAmbientOcclusionQualityLevel,
     render::view::Msaa,
+    window::WindowMode,
 };
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct GraphicSettings {
+    pub window_mode: WindowMode,
+    pub vsync: VsyncMode,
     pub hdr: bool,
     pub aa: AntiAliasing,
     #[serde(with = "ScreenSpaceAmbientOcclusionQualityLevelDef")]
     pub ssao: ScreenSpaceAmbientOcclusionQualityLevel,
     pub specular_transmission: SpecularTransmission,
+}
+
+#[derive(Default, Serialize, Deserialize)]
+pub enum VsyncMode {
+    Off,
+    On,
+    #[default]
+    Auto,
+    Adaptive,
+    Fast,
 }
 
 #[derive(Default, Serialize, Deserialize)]

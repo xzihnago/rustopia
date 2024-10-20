@@ -6,9 +6,13 @@ use bevy::{
     },
     pbr::{ScreenSpaceAmbientOcclusionBundle, ScreenSpaceAmbientOcclusionSettings},
     prelude::*,
+    window::PresentMode,
 };
 
-use crate::{settings::AntiAliasing, Settings};
+use crate::{
+    settings::{AntiAliasing, VsyncMode},
+    Settings,
+};
 
 pub struct SettingsPlugin;
 
@@ -18,16 +22,35 @@ impl Plugin for SettingsPlugin {
 
         app.add_systems(
             First,
-            (set_hdr, set_aa, set_ssao)
+            (set_window_mode, set_vsync, set_hdr, set_aa, set_ssao)
                 .run_if(|settings: Res<Settings>| resource_changed(settings)),
         );
 
-        app.insert_resource(Settings::load("settings.json").unwrap_or_else(|_| {
-            let settings = Settings::default();
-            settings.save("settings.json").unwrap();
-            settings
-        }));
+        let settings = Settings::load("settings.json").unwrap_or_default();
+        settings
+            .save("settings.json")
+            .expect("Failed to save settings");
+
+        app.insert_resource(settings);
     }
+}
+
+fn set_window_mode(mut window: Query<&mut Window>, settings: Res<Settings>) {
+    window.iter_mut().for_each(|mut window| {
+        window.mode = settings.graphic.window_mode;
+    });
+}
+
+fn set_vsync(mut window: Query<&mut Window>, settings: Res<Settings>) {
+    window.iter_mut().for_each(|mut window| {
+        window.present_mode = match settings.graphic.vsync {
+            VsyncMode::Off => PresentMode::AutoNoVsync,
+            VsyncMode::On => PresentMode::Fifo,
+            VsyncMode::Auto => PresentMode::AutoVsync,
+            VsyncMode::Adaptive => PresentMode::FifoRelaxed,
+            VsyncMode::Fast => PresentMode::Mailbox,
+        }
+    });
 }
 
 fn set_hdr(settings: Res<Settings>, mut query: Query<&mut Camera>) {
