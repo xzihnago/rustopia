@@ -5,7 +5,7 @@ mod debugpanel_plugin;
 mod debugpanel_state;
 mod page_camera;
 mod page_physics;
-mod page_system_info;
+mod page_system;
 
 use debugpanel::DebugPanel;
 use debugpanel_pages::DebugPanelPages;
@@ -13,6 +13,6 @@ use debugpanel_pages_bundle::DebugPanelPagesBundle;
 use debugpanel_state::DebugPanelState;
 use page_camera::page_camera;
 use page_physics::page_physics;
-use page_system_info::page_system_info;
+use page_system::page_system;
 
 pub use debugpanel_plugin::DebugPanelPlugin;

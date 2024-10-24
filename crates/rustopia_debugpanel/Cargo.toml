@@ -4,5 +4,7 @@ version = "0.14.0"
 edition = "2021"
 
 [dependencies]
+strum = "0.26"
+strum_macros = "0.26"
 bevy = { version = "0.14", features = ["bevy_dev_tools"] }
 bevy_rapier3d = { version = "0.27", features = ["parallel", "simd-stable"] }

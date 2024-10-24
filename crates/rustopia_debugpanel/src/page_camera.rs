@@ -37,7 +37,7 @@ pub fn page_camera(
         (query.get_single_mut(), camera.get_single())
     {
         [
-            "FPS: ",
+            "FPS:      ",
             &format!(
                 "{:.2}",
                 diagnostics

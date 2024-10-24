@@ -1,9 +1,11 @@
 use bevy::prelude::*;
+use strum_macros::{AsRefStr, EnumIter};
 
-#[derive(Default, Component)]
+#[derive(Clone, Copy, PartialEq, Default, EnumIter, AsRefStr, Component)]
 pub enum DebugPanelPages {
     #[default]
-    SystemInfo,
+    System,
+    Info,
     Camera,
     Physics,
     SkyLight,

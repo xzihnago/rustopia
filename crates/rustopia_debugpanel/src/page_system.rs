@@ -6,9 +6,9 @@ use bevy::{
 use crate::{DebugPanelPages, DebugPanelPagesBundle};
 
 impl DebugPanelPagesBundle {
-    pub fn system_info() -> Self {
+    pub fn system() -> Self {
         Self(
-            DebugPanelPages::SystemInfo,
+            DebugPanelPages::System,
             TextBundle::from_sections([
                 // OS
                 TextSection::default(),
@@ -34,17 +34,21 @@ impl DebugPanelPagesBundle {
                 TextSection::default(),
                 TextSection::default(),
                 TextSection::default(),
-            ]),
+            ])
+            .with_style(Style {
+                align_items: AlignItems::Stretch,
+                ..default()
+            }),
         )
     }
 }
 
-pub fn page_system_info(
+pub fn page_system(
     sysinfo: Res<SystemInfo>,
     diagnostics: Res<DiagnosticsStore>,
     mut query: Query<(&DebugPanelPages, &mut Text)>,
 ) {
-    if let Ok((DebugPanelPages::SystemInfo, mut text)) = query.get_single_mut() {
+    if let Ok((DebugPanelPages::System, mut text)) = query.get_single_mut() {
         [
             "OS:     ",
             &sysinfo.os,
