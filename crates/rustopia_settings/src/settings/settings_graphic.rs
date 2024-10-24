@@ -10,12 +10,28 @@ use serde::{Deserialize, Serialize};
 #[serde(default)]
 pub struct GraphicSettings {
     pub window_mode: WindowMode,
+    pub resolution: Resolution,
     pub vsync: VsyncMode,
     pub hdr: bool,
     pub aa: AntiAliasing,
     #[serde(with = "ScreenSpaceAmbientOcclusionQualityLevelDef")]
     pub ssao: ScreenSpaceAmbientOcclusionQualityLevel,
     pub specular_transmission: SpecularTransmission,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Resolution {
+    pub width: u32,
+    pub height: u32,
+}
+
+impl Default for Resolution {
+    fn default() -> Self {
+        Self {
+            width: 1280,
+            height: 720,
+        }
+    }
 }
 
 #[derive(Default, Serialize, Deserialize)]

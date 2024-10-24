@@ -22,22 +22,41 @@ impl Plugin for SettingsPlugin {
 
         app.add_systems(
             First,
-            (set_window_mode, set_vsync, set_hdr, set_aa, set_ssao)
+            (
+                save_settings,
+                set_window_mode,
+                set_resolution,
+                set_vsync,
+                set_hdr,
+                set_aa,
+                set_ssao,
+            )
                 .run_if(|settings: Res<Settings>| resource_changed(settings)),
         );
 
-        let settings = Settings::load("settings.json").unwrap_or_default();
-        settings
-            .save("settings.json")
-            .expect("Failed to save settings");
-
-        app.insert_resource(settings);
+        app.insert_resource(Settings::load("settings.json").unwrap_or_default());
     }
+}
+
+fn save_settings(settings: Res<Settings>) {
+    settings
+        .save("settings.json")
+        .expect("Failed to save settings");
 }
 
 fn set_window_mode(mut window: Query<&mut Window>, settings: Res<Settings>) {
     window.iter_mut().for_each(|mut window| {
         window.mode = settings.graphic.window_mode;
+    });
+}
+
+fn set_resolution(mut window: Query<&mut Window>, settings: Res<Settings>) {
+    window.iter_mut().for_each(|mut window| {
+        window.resolution.set_physical_resolution(
+            settings.graphic.resolution.width,
+            settings.graphic.resolution.height,
+        );
+        window.position.center(MonitorSelection::Current);
     });
 }
 
