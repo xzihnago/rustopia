@@ -38,12 +38,12 @@ fn auto_collider_hook(mut world: DeferredWorld, entity: Entity, _: ComponentId) 
                         .insert(collider);
                 }
 
-                None => panic!("Failed to create collider for entity {:?}", entity),
+                None => error!("Failed to create collider for entity {:?}", entity),
             },
 
-            None => panic!("Failed to get {:?} of {:?}", mesh, entity),
+            None => error!("Failed to get {:?} of {:?}", mesh, entity),
         },
 
-        None => panic!("{:?} does not have a mesh", entity),
+        None => error!("{:?} does not have a mesh", entity),
     }
 }
