@@ -47,30 +47,24 @@ fn spawn_maze(
             let mesh = Cuboid::new(setting.size, setting.size, setting.thickness);
 
             // Start
-            parent.spawn((
-                PbrBundle {
-                    mesh: meshes.add(mesh),
-                    material: materials.add(setting.color_start),
-                    transform: Transform::from_xyz(setting.size * 0.5, setting.size * 0.5, 0.0001),
-                    ..default()
-                },
-                AutoCollider,
-            ));
+            parent.spawn(PbrBundle {
+                mesh: meshes.add(mesh),
+                material: materials.add(setting.color_start),
+                transform: Transform::from_xyz(setting.size * 0.5, setting.size * 0.5, 0.0001),
+                ..default()
+            });
 
             // Goal
-            parent.spawn((
-                PbrBundle {
-                    mesh: meshes.add(mesh),
-                    material: materials.add(setting.color_goal),
-                    transform: Transform::from_xyz(
-                        setting.size * (setting.width as f32 - 0.5),
-                        setting.size * (setting.height as f32 - 0.5),
-                        0.0001,
-                    ),
-                    ..default()
-                },
-                AutoCollider,
-            ));
+            parent.spawn(PbrBundle {
+                mesh: meshes.add(mesh),
+                material: materials.add(setting.color_goal),
+                transform: Transform::from_xyz(
+                    setting.size * (setting.width as f32 - 0.5),
+                    setting.size * (setting.height as f32 - 0.5),
+                    0.0001,
+                ),
+                ..default()
+            });
         })
         .with_children(|parent| {
             // X walls
