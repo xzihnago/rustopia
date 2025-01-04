@@ -1,9 +1,9 @@
 use bevy::{
+    image::ImageSampler,
     prelude::*,
     render::{
         render_asset::RenderAssetUsages,
         render_resource::{Extent3d, TextureDimension, TextureFormat},
-        texture::ImageSampler,
     },
 };
 

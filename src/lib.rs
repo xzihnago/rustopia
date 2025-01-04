@@ -33,11 +33,11 @@ fn update_cursor_grab_mode(
 ) {
     if let Ok(mut window) = window.get_single_mut() {
         if keyboard.just_pressed(KeyCode::Escape) {
-            window.cursor.visible = true;
-            window.cursor.grab_mode = CursorGrabMode::None;
+            window.cursor_options.visible = true;
+            window.cursor_options.grab_mode = CursorGrabMode::None;
         } else if mouse.just_pressed(MouseButton::Left) {
-            window.cursor.visible = false;
-            window.cursor.grab_mode = CursorGrabMode::Locked;
+            window.cursor_options.visible = false;
+            window.cursor_options.grab_mode = CursorGrabMode::Locked;
         }
     }
 }

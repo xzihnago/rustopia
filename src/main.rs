@@ -3,7 +3,7 @@
 use std::fs::OpenOptions;
 
 use bevy::{
-    log::{BoxedLayer, Level, LogPlugin},
+    log::{tracing_subscriber, BoxedLayer, Level, LogPlugin},
     prelude::*,
 };
 use bevy_rapier3d::prelude::*;
@@ -40,7 +40,7 @@ fn custom_layer(_: &mut App) -> Option<BoxedLayer> {
         .expect("Failed to open debug.log");
 
     Some(Box::new(
-        bevy::log::tracing_subscriber::fmt::layer()
+        tracing_subscriber::fmt::layer()
             .with_ansi(false)
             .with_writer(debug_file),
     ))

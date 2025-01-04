@@ -1,33 +1,17 @@
 use bevy::{
-    ecs::{
-        component::{ComponentHooks, ComponentId, StorageType},
-        world::DeferredWorld,
-    },
+    ecs::{component::ComponentId, world::DeferredWorld},
     prelude::*,
 };
 use bevy_rapier3d::prelude::*;
 
-/// A component that automatically creates a collider for an entity based on its mesh
-///
-/// # Panics
-/// Panics if the entity does not have a mesh or if the mesh is empty
-// TODO: Bevy 0.15 (https://github.com/bevyengine/bevy/pull/14005)
-// #[derive(Component)]
-// #[component(on_add = auto_collider_hook)]
+#[derive(Component)]
+#[component(on_add = auto_collider_hook)]
 pub struct AutoCollider;
 
-impl Component for AutoCollider {
-    const STORAGE_TYPE: StorageType = StorageType::Table;
-
-    fn register_component_hooks(hooks: &mut ComponentHooks) {
-        hooks.on_add(auto_collider_hook);
-    }
-}
-
 fn auto_collider_hook(mut world: DeferredWorld, entity: Entity, _: ComponentId) {
-    let meshes = world.get_resource::<Assets<Mesh>>().unwrap();
+    let meshes = world.resource::<Assets<Mesh>>();
 
-    match world.get::<Handle<Mesh>>(entity) {
+    match world.get::<Mesh3d>(entity) {
         Some(mesh) => match meshes.get(mesh) {
             Some(mesh) => match Collider::from_bevy_mesh(mesh, &ComputedColliderShape::default()) {
                 Some(collider) => {

@@ -5,8 +5,8 @@ edition = "2021"
 
 [dependencies]
 rand = "0.8"
-bevy = "0.14"
-bevy_rapier3d = { version = "0.27", features = ["parallel", "simd-stable"] }
+bevy = "0.15"
+bevy_rapier3d = { version = "0.28", features = ["parallel", "simd-stable"] }
 rustopia_utils = { path = "crates/rustopia_utils" }
 rustopia_settings = { path = "crates/rustopia_settings" }
 rustopia_debugpanel = { path = "crates/rustopia_debugpanel" }

@@ -1,10 +1,10 @@
 use bevy::{
     core_pipeline::{
-        experimental::taa::{TemporalAntiAliasBundle, TemporalAntiAliasPlugin},
+        experimental::taa::{TemporalAntiAliasPlugin, TemporalAntiAliasing},
         fxaa::Fxaa,
-        smaa::SmaaSettings,
+        smaa::Smaa,
     },
-    pbr::{ScreenSpaceAmbientOcclusionBundle, ScreenSpaceAmbientOcclusionSettings},
+    pbr::ScreenSpaceAmbientOcclusion,
     prelude::*,
     window::PresentMode,
 };
@@ -78,17 +78,11 @@ fn set_hdr(settings: Res<Settings>, mut query: Query<&mut Camera>) {
     });
 }
 
-fn set_aa(
-    mut commands: Commands,
-    settings: Res<Settings>,
-    mut msaa: ResMut<Msaa>,
-    mut query: Query<Entity, With<Camera>>,
-) {
+fn set_aa(mut commands: Commands, settings: Res<Settings>, mut query: Query<Entity, With<Camera>>) {
     query.iter_mut().for_each(|entity| {
         let mut camera = commands.entity(entity);
 
-        *msaa = Msaa::Off;
-        camera.remove::<(Fxaa, TemporalAntiAliasBundle)>();
+        camera.remove::<(Fxaa, Msaa, TemporalAntiAliasing)>();
 
         match settings.graphic.aa {
             AntiAliasing::FXAA(sensitivity) => {
@@ -100,15 +94,15 @@ fn set_aa(
             }
 
             AntiAliasing::SMAA(preset) => {
-                camera.insert(SmaaSettings { preset });
+                camera.insert(Smaa { preset });
             }
 
             AntiAliasing::MSAA(samples) => {
-                *msaa = samples;
+                camera.insert(samples);
             }
 
             AntiAliasing::TAA => {
-                camera.insert(TemporalAntiAliasBundle::default());
+                camera.insert(TemporalAntiAliasing::default());
             }
 
             _ => {}
@@ -120,11 +114,9 @@ fn set_ssao(mut commands: Commands, settings: Res<Settings>, query: Query<Entity
     query.iter().for_each(|entity| {
         commands
             .entity(entity)
-            .remove::<ScreenSpaceAmbientOcclusionBundle>()
-            .insert(ScreenSpaceAmbientOcclusionBundle {
-                settings: ScreenSpaceAmbientOcclusionSettings {
-                    quality_level: settings.graphic.ssao,
-                },
+            .remove::<ScreenSpaceAmbientOcclusion>()
+            .insert(ScreenSpaceAmbientOcclusion {
+                quality_level: settings.graphic.ssao,
                 ..default()
             });
     });

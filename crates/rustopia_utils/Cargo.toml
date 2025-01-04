@@ -1,8 +1,11 @@
 [package]
 name = "rustopia_utils"
-version = "0.14.0"
+version = "0.15.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.14"
-bevy_rapier3d = { version = "0.27", features = ["parallel", "simd-stable"] }
+bevy = { version = "0.15", default-features = false, features = [
+    "bevy_asset",
+    "basis-universal",
+] }
+bevy_rapier3d = { version = "0.28", features = ["parallel", "simd-stable"] }

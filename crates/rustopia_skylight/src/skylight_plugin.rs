@@ -41,11 +41,8 @@ fn startup(mut commands: Commands) {
     });
     commands.spawn((
         Skylight,
-        DirectionalLightBundle {
-            directional_light: DirectionalLight {
-                shadows_enabled: true,
-                ..default()
-            },
+        DirectionalLight {
+            shadows_enabled: true,
             ..default()
         },
     ));
