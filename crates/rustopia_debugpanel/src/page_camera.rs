@@ -6,27 +6,27 @@ use bevy::{
 
 use crate::{DebugPanelPages, DebugPanelPagesBundle};
 
-impl DebugPanelPagesBundle {
-    pub fn camera() -> Self {
-        Self(
-            DebugPanelPages::Camera,
-            TextBundle::from_sections([
-                // FPS
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                // Position
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                // Rotation
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-            ]),
-        )
-    }
-}
+// impl DebugPanelPagesBundle {
+//     pub fn camera() -> Self {
+//         Self(
+//             DebugPanelPages::Camera,
+//             TextBundle::from_sections([
+//                 // FPS
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 // Position
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 // Rotation
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//             ]),
+//         )
+//     }
+// }
 
 pub fn page_camera(
     diagnostics: Res<DiagnosticsStore>,
@@ -65,7 +65,7 @@ pub fn page_camera(
         .iter()
         .enumerate()
         .for_each(|(i, value)| {
-            text.sections[i].value = value.to_string();
+            // text.sections[i].value = value.to_string();
         });
     }
 }

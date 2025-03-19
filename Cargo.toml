@@ -5,7 +5,11 @@ edition = "2021"
 
 [dependencies]
 rand = "0.8"
-bevy = "0.15"
+bevy = { version = "0.15", default-features = false, features = [
+    "bevy_winit",
+    "multi_threaded",
+    "tonemapping_luts",
+] }
 bevy_rapier3d = { version = "0.28", features = ["parallel", "simd-stable"] }
 rustopia_utils = { path = "crates/rustopia_utils" }
 rustopia_settings = { path = "crates/rustopia_settings" }
@@ -28,4 +32,4 @@ opt-level = 3
 
 [profile.release]
 codegen-units = 1
-strip = "symbols"
+lto = "thin"
