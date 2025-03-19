@@ -1,0 +1,14 @@
+[package]
+name = "rustopia_player"
+version = "0.15.0"
+edition = "2021"
+
+[dependencies]
+bevy = { version = "0.15", default-features = false }
+bevy_rapier3d = { version = "0.28", features = [
+    "debug-render-3d",
+    "simd-stable",
+    "parallel",
+] }
+bevy_panorbit_camera = "0.21"
+rustopia_settings = { path = "../rustopia_settings" }

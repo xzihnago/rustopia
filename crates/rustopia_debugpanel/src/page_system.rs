@@ -5,43 +5,43 @@ use bevy::{
 
 use crate::{DebugPanelPages, DebugPanelPagesBundle};
 
-impl DebugPanelPagesBundle {
-    pub fn system() -> Self {
-        Self(
-            DebugPanelPages::System,
-            TextBundle::from_sections([
-                // OS
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                // CPU
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                // Memory
-                TextSection::default(),
-                TextSection::default(),
-                // Usage
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-                TextSection::default(),
-            ])
-            .with_style(Style {
-                align_items: AlignItems::Stretch,
-                ..default()
-            }),
-        )
-    }
-}
+// impl DebugPanelPagesBundle {
+//     pub fn system() -> Self {
+//         Self(
+//             DebugPanelPages::System,
+//             TextBundle::from_sections([
+//                 // OS
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 // CPU
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 // Memory
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 // Usage
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//                 TextSection::default(),
+//             ])
+//             .with_style(Style {
+//                 align_items: AlignItems::Stretch,
+//                 ..default()
+//             }),
+//         )
+//     }
+// }
 
 pub fn page_system(
     sysinfo: Res<SystemInfo>,
@@ -88,7 +88,7 @@ pub fn page_system(
         .iter()
         .enumerate()
         .for_each(|(i, value)| {
-            text.sections[i].value = value.to_string();
+            // text.sections[i].value = value.to_string();
         });
     }
 }

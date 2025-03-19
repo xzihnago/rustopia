@@ -1,0 +1,24 @@
+[package]
+name = "gravity_maze"
+version = "0.15.0"
+edition = "2021"
+
+[lib]
+name = "gravity_maze"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+maze_generator = "2"
+ndk-sys = "0.6"
+bevy = { version = "0.15", default-features = false, features = [
+    "android-game-activity",
+    "android_shared_stdcxx",
+    "bevy_window",
+    "multi_threaded",
+    "tonemapping_luts",
+    "vorbis",
+] }
+bevy_rapier3d = { version = "0.28", features = ["parallel", "simd-stable"] }
+rustopia_utils = { path = "../../crates/rustopia_utils" }
+rustopia_skylight = { path = "../../crates/rustopia_skylight" }
+rustopia_maze = { path = "../../crates/rustopia_maze" }

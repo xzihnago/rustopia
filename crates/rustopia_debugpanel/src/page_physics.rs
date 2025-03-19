@@ -3,14 +3,14 @@ use bevy_rapier3d::prelude::*;
 
 use crate::{DebugPanelPages, DebugPanelPagesBundle};
 
-impl DebugPanelPagesBundle {
-    pub fn physics() -> Self {
-        Self(
-            DebugPanelPages::Physics,
-            TextBundle::from_sections([TextSection::default(), TextSection::default()]),
-        )
-    }
-}
+// impl DebugPanelPagesBundle {
+//     pub fn physics() -> Self {
+//         Self(
+//             DebugPanelPages::Physics,
+//             TextBundle::from_sections([TextSection::default(), TextSection::default()]),
+//         )
+//     }
+// }
 
 pub fn page_physics(
     rapier_config: Res<DebugRenderContext>,
@@ -21,7 +21,7 @@ pub fn page_physics(
             .iter()
             .enumerate()
             .for_each(|(i, value)| {
-                text.sections[i].value = value.to_string();
+                // text.sections[i].value = value.to_string();
             });
     }
 }
